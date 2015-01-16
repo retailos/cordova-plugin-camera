@@ -171,25 +171,33 @@ static NSSet* org_apache_cordova_validArrowDirections;
     [self displayPopover:options];
 }
 
+#define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
 - (void)displayPopover:(NSDictionary*)options
 {
     NSInteger x = 0;
     NSInteger y = 32;
     NSInteger width = 320;
     NSInteger height = 480;
+    NSInteger angle = 0;
     UIPopoverArrowDirection arrowDirection = UIPopoverArrowDirectionAny;
-
+    
     if (options) {
         x = [options integerValueForKey:@"x" defaultValue:0];
         y = [options integerValueForKey:@"y" defaultValue:32];
         width = [options integerValueForKey:@"width" defaultValue:320];
         height = [options integerValueForKey:@"height" defaultValue:480];
+        angle = [options integerValueForKey:@"angle" defaultValue:0];
         arrowDirection = [options integerValueForKey:@"arrowDir" defaultValue:UIPopoverArrowDirectionAny];
+        
         if (![org_apache_cordova_validArrowDirections containsObject:[NSNumber numberWithUnsignedInteger:arrowDirection]]) {
-            arrowDirection = UIPopoverArrowDirectionAny;
+            arrowDirection = NO;
         }
     }
-
+    
+    if (angle > 0) {
+        [[self pickerController] popoverController].contentViewController.view.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(270));
+    }
+    
     [[[self pickerController] popoverController] setDelegate:self];
     [[[self pickerController] popoverController] presentPopoverFromRect:CGRectMake(x, y, width, height)
                                                                  inView:[self.webView superview]
